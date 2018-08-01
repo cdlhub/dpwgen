@@ -1,2 +1,3 @@
 # dpwgen
-Diceware password generator
+
+Diceware password generator.
