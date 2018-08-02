@@ -1,4 +1,8 @@
-#include <gsl/gsl_rng.h>
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// #include <gsl/gsl_rng.h>
 
 const int MAX_NUM_DICE = 5;
 const int SIX_POW[MAX_NUM_DICE] = { 1, 6, 36, 216, 1296 };   
@@ -30,15 +34,17 @@ int compute_line(const int d[], int num_dice)
     return line;
 }
 
-int read_line(const char *file_name, int n, char* result)
+char* read_line(const char *file_name, int line_number)
 {
     FILE *f = fopen(file_name, "r");
     if (f == NULL)
     {
-        return 0;
+        return NULL;
     }
 
-    for (int count = 1; fgets(result, 512, f) != NULL; count++)
+    size_t n = 0;
+    char *buf = NULL;
+    for (int count = 1; getline(&buf, &n, f) < 0; count++)
     {
         if (count == n)
         {
@@ -46,7 +52,7 @@ int read_line(const char *file_name, int n, char* result)
         }
     }
     fclose(f);
-    return 1;
+    return buf;
 }
 
 int main(int argc, char const *argv[])
@@ -61,16 +67,17 @@ int main(int argc, char const *argv[])
     int line = compute_line(d, MAX_NUM_DICE);
     printf("line:     %d\n", line);
 
-    char* file_name = "eff_large_wordlist.txt";
-    char password[5];
-    int ok = read_line(file_name, line, password);
-    if (!ok)
+    char *file_name = "eff_large_wordlist.txt";
+    char *password = read_line(file_name, line);
+    if (password == NULL)
     {
         fprintf(stderr, "error: cannot read '%s'", file_name);
         return 1;
     }
 
     printf("password: %s\n", password);
+    printf("length: %lu\n", strlen(password));
+    free(password);
 
     return 0;
 }
