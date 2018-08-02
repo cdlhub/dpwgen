@@ -30,6 +30,25 @@ int compute_line(const int d[], int num_dice)
     return line;
 }
 
+int read_line(const char *file_name, int n, char* result)
+{
+    FILE *f = fopen(file_name, "r");
+    if (f == NULL)
+    {
+        return 0;
+    }
+
+    for (int count = 1; fgets(result, 512, f) != NULL; count++)
+    {
+        if (count == n)
+        {
+            break;
+        }
+    }
+    fclose(f);
+    return 1;
+}
+
 int main(int argc, char const *argv[])
 {
     int d[MAX_NUM_DICE] = { 0, 0, 0, 0, 0 };
@@ -40,7 +59,18 @@ int main(int argc, char const *argv[])
     }
 
     int line = compute_line(d, MAX_NUM_DICE);
-    printf("password line is %d\n", line);
+    printf("line:     %d\n", line);
+
+    char* file_name = "eff_large_wordlist.txt";
+    char password[5];
+    int ok = read_line(file_name, line, password);
+    if (!ok)
+    {
+        fprintf(stderr, "error: cannot read '%s'", file_name);
+        return 1;
+    }
+
+    printf("password: %s\n", password);
 
     return 0;
 }
