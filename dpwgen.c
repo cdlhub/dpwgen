@@ -1,4 +1,4 @@
-#define _GNU_SOURCE
+// #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,14 +44,23 @@ char* read_line(const char *file_name, int line_number)
 
     size_t n = 0;
     char *buf = NULL;
-    for (int count = 1; getline(&buf, &n, f) < 0; count++)
+    int len = 0;
+    // TODO:
+    //  - manage getline error (=> free(buf))
+    //  - manage empty lines
+    for (int count = 1; (len = getline(&buf, &n, f)) >= 0; count++)
     {
-        if (count == n)
+        if (count == line_number)
         {
             break;
         }
+
+        free(buf);
+        buf = NULL;
+        n = 0;
     }
     fclose(f);
+
     return buf;
 }
 
@@ -75,7 +84,7 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
-    printf("password: %s\n", password);
+    printf("password: '%s'\n", password+MAX_NUM_DICE+1);
     printf("length: %lu\n", strlen(password));
     free(password);
 
