@@ -1,4 +1,5 @@
 // #define _GNU_SOURCE
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,12 @@
 
 const int MAX_NUM_DICE = 5;
 const int SIX_POW[MAX_NUM_DICE] = { 1, 6, 36, 216, 1296 };   
+
+#define FREE_TO_NULL(p) \
+{ \
+    free(p); \
+    p = NULL; \
+}
 
 int scan_dice_value(int n)
 {
@@ -34,34 +41,49 @@ int compute_line(const int d[], int num_dice)
     return line;
 }
 
-char* read_line(const char *file_name, int line_number)
+int read_line(char **buf, const char *file_name, int line_number)
 {
-    FILE *f = fopen(file_name, "r");
-    if (f == NULL)
+    FILE *file = fopen(file_name, "r");
+    if (file == NULL)
     {
-        return NULL;
+        return -1;
     }
 
-    size_t n = 0;
-    char *buf = NULL;
+    size_t buf_size = 0;
     int len = 0;
-    // TODO:
-    //  - manage getline error (=> free(buf))
-    //  - manage empty lines
-    for (int count = 1; (len = getline(&buf, &n, f)) >= 0; count++)
+    for (int count = 1; (len = getline(buf, &buf_size, file)) != -1; count++)
     {
         if (count == line_number)
         {
             break;
         }
 
-        free(buf);
-        buf = NULL;
-        n = 0;
+        // init for next getline()
+        FREE_TO_NULL(*buf);
+        buf_size = 0;
     }
-    fclose(f);
+    fclose(file);
 
-    return buf;
+    // getline() error or file contains less lines than line_number
+    if (len == -1)
+    {
+        FREE_TO_NULL(*buf);
+        return -1;
+    }
+
+    return len;
+}
+
+void print_password(const char *buf, int len)
+{
+    int start = MAX_NUM_DICE + 1;
+    int size = len - start;
+    if (buf[len-1] == '\n')
+    {
+        size--;
+    }
+
+    printf("password: '%.*s'\n", size, buf + start);
 }
 
 int main(int argc, char const *argv[])
@@ -73,19 +95,19 @@ int main(int argc, char const *argv[])
         d[i] = scan_dice_value(i+1);
     }
 
-    int line = compute_line(d, MAX_NUM_DICE);
-    printf("line:     %d\n", line);
+    int line_number = compute_line(d, MAX_NUM_DICE);
+    printf("line:     %d\n", line_number);
 
     char *file_name = "eff_large_wordlist.txt";
-    char *password = read_line(file_name, line);
-    if (password == NULL)
+    char *password = NULL;
+    int password_len = read_line(&password, file_name, line_number);
+    if (password_len == -1)
     {
-        fprintf(stderr, "error: cannot read '%s'", file_name);
+        fprintf(stderr, "error: cannot read password from '%s'", file_name);
         return 1;
     }
 
-    printf("password: '%s'\n", password+MAX_NUM_DICE+1);
-    printf("length: %lu\n", strlen(password));
+    print_password(password, password_len);
     free(password);
 
     return 0;
