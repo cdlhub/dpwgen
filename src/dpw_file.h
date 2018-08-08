@@ -11,8 +11,14 @@
 int compute_line(const int d[], int num_dice);
 
 /*!
- * buf is allocated in the function. You are responsible to call free after use.
+ * buf is allocated by read_line(). It must be free by the caller
+ * only in case of success (return value > 0).
  */
-int read_line(char **buf, const char *file_name, int line_number);
+ssize_t read_line(char **buf, const char *file_name, int line_number);
+
+/*!
+ * The caller owns the return value.
+ */
+char* get_password(const char *buf, size_t len, int num_dice);
 
 #endif // _DPW_FILE_H_
