@@ -4,4 +4,5 @@ CHANGELOG
 v0.1.0
 ------
 
+- Enter dice draw by hand.
 - Initial release: output password line number based on dice result.
