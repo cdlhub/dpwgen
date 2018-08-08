@@ -7,7 +7,7 @@
 #include "dpw_file.h"
 #include "dpw_macros.h"
 
-const int MAX_NUM_DICE = 5;
+#define VERSION "0.2.0"
 
 int scan_dice_value(int n)
 {
@@ -42,7 +42,7 @@ void draw(int d[], size_t num_dice)
 int main(void)
 {
     const size_t num_dice = 5;
-    const int num_words = 12;
+    const int num_words = 128;
     const char* const pwd_file_name = "../eff_large_wordlist.txt";
 
     // print header
