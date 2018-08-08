@@ -1,8 +1,7 @@
 #define _GNU_SOURCE
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <time.h>
 // #include <gsl/gsl_rng.h>
 
 #include "dpw_file.h"
@@ -27,43 +26,50 @@ int scan_dice_value(int n)
     return val;
 }
 
-void print_password(const char *buf, int len)
+void init_draw(unsigned int seed)
 {
-    int start = MAX_NUM_DICE + 1;
-    int size = len - start;
-    if (buf[len-1] == '\n')
-    {
-        size--;
-    }
+    srand(seed);
+}
 
-    printf("password: '%.*s'\n", size, buf + start);
+void draw(int d[], size_t num_dice)
+{
+    for (size_t i = 0; i < num_dice; i++)
+    {
+        d[i] = (rand() % 6) + 1;
+    }
 }
 
 int main(void)
 {
-    int d[] = { 0, 0, 0, 0, 0 };
+    const size_t num_dice = 5;
+    const int num_words = 12;
+    const char* const pwd_file_name = "../eff_large_wordlist.txt";
 
+    // print header
+    printf("| line | dice draw | password     |\n");
+    printf("| ---- | --------- | ------------ |\n");
 
-    for (int i = 0; i < MAX_NUM_DICE; i++)
+    init_draw((unsigned) time(NULL));
+    int d[num_dice];
+    for (int i = 0; i < num_words; i++)
     {
-        d[i] = scan_dice_value(i+1);
+        draw(d, num_dice);
+
+        char* pwd_line;
+        int pwd_line_num = compute_line(d, num_dice);
+        ssize_t pwd_len = read_line(&pwd_line, pwd_file_name, pwd_line_num);
+        if (pwd_len == -1)
+        {
+            fprintf(stderr, "error: cannot read password from '%s'", pwd_file_name);
+            return EXIT_FAILURE;
+        }
+
+        char* pwd = get_password(pwd_line, pwd_len, num_dice);
+        FREE_TO_NULL(pwd_line);
+
+        printf("| %4d |     %d%d%d%d%d | %-12s |\n", pwd_line_num, d[0], d[1], d[2], d[3], d[4], pwd);
+        FREE_TO_NULL(pwd);
     }
 
-    int line_number = compute_line(d, MAX_NUM_DICE);
-    printf("line:     %d\n", line_number);
-
-    char *file_name = "../eff_large_wordlist.txt";
-    // char *file_name = "../empty.txt";
-    char *password = NULL;
-    int password_len = read_line(&password, file_name, line_number);
-    if (password_len == -1)
-    {
-        fprintf(stderr, "error: cannot read password from '%s'", file_name);
-        return 1;
-    }
-
-    print_password(password, password_len);
-    free(password);
-
-    return 0;
+    return EXIT_SUCCESS;
 }
