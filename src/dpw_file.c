@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "dpw_macros.h"
 
@@ -17,7 +18,7 @@ int compute_line(const int d[], int num_dice)
     return line;
 }
 
-int read_line(char **buf, const char *file_name, int line_number)
+ssize_t read_line(char **buf, const char *file_name, int line_number)
 {
     FILE *file = fopen(file_name, "r");
     if (file == NULL)
@@ -26,7 +27,7 @@ int read_line(char **buf, const char *file_name, int line_number)
     }
 
     size_t buf_size = 0;
-    int len = 0;
+    ssize_t len = 0;
     for (int count = 1; (len = getline(buf, &buf_size, file)) != -1; count++)
     {
         if (count == line_number)
@@ -47,4 +48,19 @@ int read_line(char **buf, const char *file_name, int line_number)
     }
 
     return len;
+}
+
+char* get_password(const char *buf, size_t len, int num_dice)
+{
+    int start = num_dice + 1;
+    size_t size = len - start;
+    if (buf[len-1] == '\n')
+    {
+        size--;
+    }
+
+    char* pwd = malloc(size + 1);
+    memcpy(pwd, buf + start, size);
+    pwd[size] = '\0';
+    return pwd;
 }
