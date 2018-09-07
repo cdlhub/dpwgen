@@ -39,15 +39,19 @@ void draw(int d[], size_t num_dice)
     }
 }
 
+void print_header()
+{
+    printf("| line | dice draw | password     |\n");
+    printf("| ---- | --------- | ------------ |\n");
+}
+
 int main(void)
 {
     const size_t num_dice = 5;
-    const int num_words = 128;
+    const int num_words = 8;
     const char* const pwd_file_name = "../eff_large_wordlist.txt";
 
-    // print header
-    printf("| line | dice draw | password     |\n");
-    printf("| ---- | --------- | ------------ |\n");
+    print_header();
 
     init_draw((unsigned) time(NULL));
     int d[num_dice];
