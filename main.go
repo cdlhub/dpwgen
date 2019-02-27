@@ -37,15 +37,15 @@ func initOptions(opt *Options) {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stdout, "Usage:")
 		fmt.Fprintf(os.Stdout, "\t%s -version\n", APPNAME)
-		fmt.Fprintf(os.Stdout, "\t%s [ -n N ] [-d D] <pass-file-name> \n", APPNAME)
+		fmt.Fprintf(os.Stdout, "\t%s [ -n N ] [ -d D ] <pass-file-name> \n", APPNAME)
 		fmt.Fprintln(os.Stdout)
 
 		flag.PrintDefaults()
 	}
 
 	flag.BoolVar(&opt.version, "version", false, "Print version number")
-	flag.UintVar(&opt.n, "n", 6, "the number of words in the password")
-	flag.UintVar(&opt.d, "d", 5, "the number of dice to roll to select a word")
+	flag.UintVar(&opt.n, "n", 6, "number of words in generated password")
+	flag.UintVar(&opt.d, "d", 5, "number of dice to roll to select a word")
 
 	flag.Parse()
 	opt.passFileName = strings.Join(flag.Args(), " ")
@@ -61,10 +61,18 @@ func initLogger(logger *Logger) {
 
 func main() {
 	opt := options
-	// log := logger
+	log := logger
 
 	if opt.version {
 		fmt.Println(APPNAME + " version " + VERSION)
+		os.Exit(0)
 	}
+
+	f, err := os.Open(opt.passFileName)
+	if err != nil {
+		log.Error.Fatalf("cannot open password file %q: %v", opt.passFileName, err)
+	}
+	defer f.Close()
+
 	os.Exit(0)
 }
