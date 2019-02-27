@@ -66,14 +66,28 @@ func main() {
 	log := logger
 
 	if opt.version {
-		fmt.Println(APPNAME + " version " + VERSION)
+		version()
 		os.Exit(0)
 	}
 
-	pw, err := internal.GeneratePassword(opt.passFileName, opt.d, opt.n)
+	pw, err := dpwgen(opt.passFileName, opt.d, opt.n)
 	if err != nil {
 		log.Error.Fatalf("cannot generate password: word list file: %q: number of dice: %d: number of words: %d: %v", opt.passFileName, opt.n, opt.d, err)
 	}
 
 	os.Exit(0)
+}
+
+func version() {
+	fmt.Println(APPNAME + " version " + VERSION)
+}
+
+func dpwgen(fileName string, d, n uint) (string, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	return internal.GeneratePassword(f, n)
 }
