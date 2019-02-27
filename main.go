@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/cdlhub/dpwgen/internal"
 )
 
 // Options is application command line options
@@ -68,11 +70,10 @@ func main() {
 		os.Exit(0)
 	}
 
-	f, err := os.Open(opt.passFileName)
+	pw, err := internal.GeneratePassword(opt.passFileName, opt.d, opt.n)
 	if err != nil {
-		log.Error.Fatalf("cannot open password file %q: %v", opt.passFileName, err)
+		log.Error.Fatalf("cannot generate password: word list file: %q: number of dice: %d: number of words: %d: %v", opt.passFileName, opt.n, opt.d, err)
 	}
-	defer f.Close()
 
 	os.Exit(0)
 }
