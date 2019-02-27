@@ -48,7 +48,7 @@ void print_header()
 int main(void)
 {
     const size_t num_dice = 5;
-    const int num_words = 8;
+    const int num_words = 6;
     const char* const pwd_file_name = "../eff_large_wordlist.txt";
 
     print_header();
