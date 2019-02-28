@@ -4,8 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
 
@@ -18,9 +21,10 @@ func GeneratePassword(wordList io.Reader, n uint) (string, error) {
 		return "", fmt.Errorf("generate password: %v", err)
 	}
 
+	rand.Seed(time.Now().UTC().UnixNano())
 	var pw []string
 	for i := uint(0); i < n; i++ {
-		w, err := getRandomWord(wl, d)
+		w, err := getRandomWord(wl, uint(d))
 		if err != nil {
 			return w, fmt.Errorf("generate password: %v", err)
 		}
@@ -69,7 +73,11 @@ func checkID(id string, n int) error {
 	return nil
 }
 
-func getRandomWord(wl map[string]string, d int) (string, error) {
+func getRandomWord(wl map[string]string, d uint) (string, error) {
+	var id string
+	for i := uint(0); i < d; i++ {
+		id += strconv.Itoa(rand.Intn(5) + 1)
+	}
 
-	return "", nil
+	return wl[id], nil
 }
