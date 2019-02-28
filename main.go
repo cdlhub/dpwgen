@@ -14,7 +14,6 @@ import (
 type Options struct {
 	version      bool
 	n            uint
-	d            uint
 	passFileName string
 }
 
@@ -39,7 +38,7 @@ func initOptions(opt *Options) {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stdout, "Usage:")
 		fmt.Fprintf(os.Stdout, "\t%s -version\n", APPNAME)
-		fmt.Fprintf(os.Stdout, "\t%s [ -n N ] [ -d D ] <pass-file-name> \n", APPNAME)
+		fmt.Fprintf(os.Stdout, "\t%s [ -n N ] <pass-file-name> \n", APPNAME)
 		fmt.Fprintln(os.Stdout)
 
 		flag.PrintDefaults()
@@ -47,7 +46,6 @@ func initOptions(opt *Options) {
 
 	flag.BoolVar(&opt.version, "version", false, "Print version number")
 	flag.UintVar(&opt.n, "n", 6, "number of words in generated password")
-	flag.UintVar(&opt.d, "d", 5, "number of dice to roll to select a word")
 
 	flag.Parse()
 	opt.passFileName = strings.Join(flag.Args(), " ")
@@ -70,10 +68,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	pw, err := dpwgen(opt.passFileName, opt.d, opt.n)
+	pw, err := dpwgen(opt.passFileName, opt.n)
 	if err != nil {
-		log.Error.Fatalf("cannot generate password: word list file: %q: number of dice: %d: number of words: %d: %v", opt.passFileName, opt.n, opt.d, err)
+		log.Error.Fatalf("%v: word list file: %q: number of words: %d: %v", APPNAME, opt.passFileName, opt.n, err)
 	}
+	fmt.Println(pw)
 
 	os.Exit(0)
 }
@@ -82,7 +81,7 @@ func version() {
 	fmt.Println(APPNAME + " version " + VERSION)
 }
 
-func dpwgen(fileName string, d, n uint) (string, error) {
+func dpwgen(fileName string, n uint) (string, error) {
 	f, err := os.Open(fileName)
 	if err != nil {
 		return "", err
