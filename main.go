@@ -45,7 +45,7 @@ func initOptions(opt *Options) {
 	}
 
 	flag.BoolVar(&opt.version, "version", false, "Print version number")
-	flag.UintVar(&opt.n, "n", 6, "number of words in generated password")
+	flag.UintVar(&opt.n, "n", 4, "number of words in generated password")
 
 	flag.Parse()
 	opt.passFileName = strings.Join(flag.Args(), " ")
