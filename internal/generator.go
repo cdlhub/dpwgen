@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -12,9 +13,12 @@ import (
 	"unicode/utf8"
 )
 
+// DIESIDE is the number of side of simulated die
+const DIESIDE = 6
+
 // GeneratePassword generates a password from a word list.
 //
-// n is the number of words the password is made of.
+// n is the number of words the passphrase is made of.
 func GeneratePassword(wordList io.Reader, n uint) (string, error) {
 	wl, d, err := loadWordList(wordList)
 	if err != nil {
@@ -57,6 +61,9 @@ func loadWordList(wordList io.Reader) (map[string]string, int, error) {
 		wl[fields[0]] = fields[1]
 	}
 
+	if len(wl) != int(math.Pow(float64(DIESIDE), float64(nDice))) {
+		return wl, nDice, fmt.Errorf("word list: wrong number of words: want: %d: got: %d", int(math.Pow(float64(DIESIDE), float64(nDice))), len(wl))
+	}
 	return wl, nDice, nil
 }
 
@@ -76,7 +83,7 @@ func checkID(id string, n int) error {
 func getRandomWord(wl map[string]string, d uint) (string, error) {
 	var id string
 	for i := uint(0); i < d; i++ {
-		id += strconv.Itoa(rand.Intn(5) + 1)
+		id += strconv.Itoa(rand.Intn(DIESIDE-1) + 1)
 	}
 
 	return wl[id], nil
