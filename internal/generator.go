@@ -86,5 +86,10 @@ func getRandomWord(wl map[string]string, d uint) (string, error) {
 		id += strconv.Itoa(rand.Intn(DIESIDE-1) + 1)
 	}
 
-	return wl[id], nil
+	w, ok := wl[id]
+	if !ok {
+		return w, fmt.Errorf("get word: id %q not found", id)
+	}
+
+	return w, nil
 }
