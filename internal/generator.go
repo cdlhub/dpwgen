@@ -13,8 +13,12 @@ import (
 	"unicode/utf8"
 )
 
-// DIESIDE is the number of side of simulated die
-const DIESIDE = 6
+const (
+	// DIESIDES is the number of side of simulated die
+	DIESIDES = 6
+	// SIDESET is the set of possible side numbers for a word ID
+	SIDESET = "[123456]"
+)
 
 // GeneratePassword generates a password from a word list.
 //
@@ -54,36 +58,39 @@ func loadWordList(wordList io.Reader) (map[string]string, int, error) {
 		if nDice == -1 {
 			nDice = d
 		}
-		if err := checkID(fields[0], nDice); err != nil {
-			return nil, -1, fmt.Errorf("word list: line %d: %v", i, err)
+		if !checkID(fields[0], nDice) {
+			return nil, -1, fmt.Errorf("word list: line %d: ID bad format: should be composed of %d numbers from 1 to %d", i, nDice, DIESIDES)
 		}
 
 		wl[fields[0]] = fields[1]
 	}
 
-	if len(wl) != int(math.Pow(float64(DIESIDE), float64(nDice))) {
-		return wl, nDice, fmt.Errorf("word list: wrong number of words: want: %d: got: %d", int(math.Pow(float64(DIESIDE), float64(nDice))), len(wl))
+	if err := checkWordListLength(wl, nDice); err != nil {
+		return wl, nDice, fmt.Errorf("word list: %v", err)
 	}
+
 	return wl, nDice, nil
 }
 
-func checkID(id string, n int) error {
-	r := regexp.MustCompile("^[123456]+$")
-	if !r.MatchString(id) {
-		return fmt.Errorf("id bad format: should be composed of 1, 2, 3, 4, 5, or 6 only: is: %s", id)
+// n is number of dice
+func checkWordListLength(wl map[string]string, n int) error {
+	nWordsWanted := int(math.Pow(float64(DIESIDES), float64(n)))
+	if len(wl) != nWordsWanted {
+		return fmt.Errorf("wrong number of words: want: %d: got: %d", nWordsWanted, len(wl))
 	}
-
-	if utf8.RuneCountInString(id) != n {
-		return fmt.Errorf("id bad format: should be of length %d: length is: %d", n, len(id))
-	}
-
 	return nil
+}
+
+// n is number of dice
+func checkID(id string, n int) bool {
+	r := regexp.MustCompile(fmt.Sprintf("^%s+$", SIDESET))
+	return r.MatchString(id) && utf8.RuneCountInString(id) == n
 }
 
 func getRandomWord(wl map[string]string, d uint) (string, error) {
 	var id string
 	for i := uint(0); i < d; i++ {
-		id += strconv.Itoa(rand.Intn(DIESIDE-1) + 1)
+		id += strconv.Itoa(rand.Intn(DIESIDES-1) + 1)
 	}
 
 	w, ok := wl[id]
