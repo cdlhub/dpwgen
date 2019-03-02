@@ -13,7 +13,9 @@ func TestCheckWordListLength(t *testing.T) {
 	}{
 		{nil, 5, false},
 		{map[string]string{}, 5, false},
+		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq"}, 1, false},
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"}, 1, true},
+		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six", "7": "sept"}, 1, false},
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"}, 6, false},
 		{map[string]string{"1": "un"}, 1, false},
 	}
