@@ -74,6 +74,9 @@ func loadWordList(wordList io.Reader) (map[string]string, int, error) {
 
 // n is number of dice
 func checkWordListLength(wl map[string]string, n int) error {
+	if n <= 0 {
+		panic("n <= 0")
+	}
 	nWordsWanted := int(math.Pow(float64(DIESIDES), float64(n)))
 	if len(wl) != nWordsWanted {
 		return fmt.Errorf("wrong number of words: want: %d: got: %d", nWordsWanted, len(wl))
@@ -83,6 +86,9 @@ func checkWordListLength(wl map[string]string, n int) error {
 
 // n is number of dice
 func checkID(id string, n int) bool {
+	if n <= 0 {
+		panic("n <= 0")
+	}
 	r := regexp.MustCompile(fmt.Sprintf("^%s+$", SIDESET))
 	return r.MatchString(id) && utf8.RuneCountInString(id) == n
 }
