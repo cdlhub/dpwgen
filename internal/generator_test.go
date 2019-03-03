@@ -1,9 +1,35 @@
 package internal
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 )
+
+func TestLoadWordList(t *testing.T) {
+	var tests = []struct {
+		input string
+		n     int
+		ok    bool
+	}{
+		{"1 un\ndeux 2\n3 trois\n4 quatre\n5 cinq\n6 six", 1, false},
+		{"1 un\n2\n3 trois\n4 quatre\n5 cinq\n6 six", 1, false},
+		{"1 un\n2 deux et demi\n3 trois\n4 quatre\n5 cinq\n6 six", 1, false},
+		{createOneDieWordListToString(), 1, true},
+		{create5DiceWordListToString(), 5, true},
+		{createWordListWithTooFewWordsToString(), 3, false},
+		{createWordListWithWrongIDToString(), 3, false},
+	}
+
+	for _, test := range tests {
+		descr := fmt.Sprintf("loadWordList(%q)", test.input)
+		r := strings.NewReader(test.input)
+		if _, n, err := loadWordList(r); (err == nil) != test.ok {
+			t.Errorf("%s: want: (%d, %t): got: (%d, %t): %v", descr, test.n, test.ok, n, err == nil, err)
+		}
+	}
+}
 
 func TestCheckWordListLength(t *testing.T) {
 	var tests = []struct {
@@ -18,6 +44,7 @@ func TestCheckWordListLength(t *testing.T) {
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six", "7": "sept"}, 1, false},
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"}, 6, false},
 		{map[string]string{"1": "un"}, 1, false},
+		{create5DiceWordList(), 5, true},
 	}
 
 	for _, test := range tests {
@@ -25,25 +52,6 @@ func TestCheckWordListLength(t *testing.T) {
 			t.Errorf("checkWordListLength(%v, %d): want: %t: got: %t: %v", test.inputList, test.inputN, test.ok, err == nil, err)
 		}
 	}
-
-	var wl = make(map[string]string)
-	var n int
-	for d1 := 1; d1 <= 6; d1++ {
-		for d2 := 1; d2 <= 6; d2++ {
-			for d3 := 1; d3 <= 6; d3++ {
-				for d4 := 1; d4 <= 6; d4++ {
-					for d5 := 1; d5 <= 6; d5++ {
-						id := strconv.Itoa(d1) + strconv.Itoa(d2) + strconv.Itoa(d3) + strconv.Itoa(d4) + strconv.Itoa(d5)
-						wl[id] = id
-					}
-				}
-			}
-		}
-	}
-	if err := checkWordListLength(wl, 5); err != nil {
-		t.Errorf("checkWordListLength(%q, %d): want: %t: got: %t: %v", wl, n, true, err == nil, err)
-	}
-
 }
 
 func TestCheckID(t *testing.T) {
@@ -72,4 +80,50 @@ func TestCheckID(t *testing.T) {
 			t.Errorf("checkID(%v, %d): want: %t: got: %t", test.inputID, test.inputN, test.ok, ok)
 		}
 	}
+}
+
+func create5DiceWordList() map[string]string {
+	var wl = make(map[string]string)
+	for d1 := 1; d1 <= 6; d1++ {
+		for d2 := 1; d2 <= 6; d2++ {
+			for d3 := 1; d3 <= 6; d3++ {
+				for d4 := 1; d4 <= 6; d4++ {
+					for d5 := 1; d5 <= 6; d5++ {
+						id := strconv.Itoa(d1) + strconv.Itoa(d2) + strconv.Itoa(d3) + strconv.Itoa(d4) + strconv.Itoa(d5)
+						wl[id] = id
+					}
+				}
+			}
+		}
+	}
+	return wl
+}
+
+func createOneDieWordListToString() string {
+	return mapToString(map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"})
+}
+
+func create5DiceWordListToString() string {
+	return mapToString(create5DiceWordList())
+}
+
+func createWordListWithTooFewWordsToString() string {
+	wl := create5DiceWordList()
+	delete(wl, "11111")
+	return mapToString(wl)
+}
+
+func createWordListWithWrongIDToString() string {
+	wl := create5DiceWordList()
+	delete(wl, "11111")
+	wl["11117"] = "11117"
+	return mapToString(wl)
+}
+
+func mapToString(m map[string]string) string {
+	var s string
+	for k, v := range m {
+		s += k + " " + v + "\n"
+	}
+	return s
 }
