@@ -2,6 +2,9 @@ package internal
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"reflect"
 	"strconv"
 	"strings"
 	"testing"
@@ -40,7 +43,7 @@ func TestCheckWordListLength(t *testing.T) {
 		{nil, 5, false},
 		{map[string]string{}, 5, false},
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq"}, 1, false},
-		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"}, 1, true},
+		{createOneDieWordList(), 1, true},
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six", "7": "sept"}, 1, false},
 		{map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"}, 6, false},
 		{map[string]string{"1": "un"}, 1, false},
@@ -82,6 +85,67 @@ func TestCheckID(t *testing.T) {
 	}
 }
 
+func TestGetRandomSide(t *testing.T) {
+	descr := fmt.Sprintf("getRandomSide()")
+
+	rand.Seed(1)
+	m := make(map[int]int)
+	for i := uint16(0); i < math.MaxUint16; i++ {
+		r := getRandomSide()
+		m[r]++
+	}
+	for i := 1; i <= DIESIDES; i++ {
+		if _, ok := m[i]; !ok {
+			t.Errorf("%s: not all %d sides generated", descr, DIESIDES)
+		}
+	}
+
+	var ok bool
+	for k := range m {
+		ok = false
+		for i := 1; i <= DIESIDES; i++ {
+			if k == i {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			t.Errorf("%s: wrong die side: got: %d", descr, k)
+		}
+	}
+}
+
+func TestGetRandomWord(t *testing.T) {
+	var tests = []struct {
+		input map[string]string
+		n     uint
+	}{
+		{createOneDieIDList(), 1},
+		{create5DiceWordList(), 5},
+	}
+
+	rand.Seed(1)
+	for _, test := range tests {
+		descr := fmt.Sprintf("getRandomWord(%d)", test.n)
+		got := make(map[string]string)
+		for i := 0; i < 100*len(test.input); i++ {
+			w, err := getRandomWord(test.input, test.n)
+			if err != nil {
+				t.Errorf("%s: should succeed: failed: %v", descr, err)
+			}
+			got[w] = w
+		}
+		if !reflect.DeepEqual(got, test.input) {
+			for k := range test.input {
+				if _, ok := got[k]; !ok {
+					t.Errorf("%s: missing key: %s", descr, k)
+				}
+			}
+			t.Errorf("%s: generated words mismatch: want length: %v: got length: %v", descr, len(test.input), len(got))
+		}
+	}
+}
+
 func create5DiceWordList() map[string]string {
 	var wl = make(map[string]string)
 	for d1 := 1; d1 <= 6; d1++ {
@@ -99,8 +163,20 @@ func create5DiceWordList() map[string]string {
 	return wl
 }
 
+func createOneDieIDList() map[string]string {
+	var ids = make(map[string]string)
+	for i := 1; i <= DIESIDES; i++ {
+		ids[strconv.Itoa(i)] = strconv.Itoa(i)
+	}
+	return ids
+}
+
+func createOneDieWordList() map[string]string {
+	return map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"}
+}
+
 func createOneDieWordListToString() string {
-	return mapToString(map[string]string{"1": "un", "2": "deux", "3": "trois", "4": "quatre", "5": "cinq", "6": "six"})
+	return mapToString(createOneDieWordList())
 }
 
 func create5DiceWordListToString() string {

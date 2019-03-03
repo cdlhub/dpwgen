@@ -93,10 +93,15 @@ func checkID(id string, n int) bool {
 	return r.MatchString(id) && utf8.RuneCountInString(id) == n
 }
 
-func getRandomWord(wl map[string]string, d uint) (string, error) {
+func getRandomSide() int {
+	return rand.Intn(DIESIDES) + 1
+}
+
+// n is number of dice
+func getRandomWord(wl map[string]string, n uint) (string, error) {
 	var id string
-	for i := uint(0); i < d; i++ {
-		id += strconv.Itoa(rand.Intn(DIESIDES-1) + 1)
+	for i := uint(0); i < n; i++ {
+		id += strconv.Itoa(getRandomSide())
 	}
 
 	w, ok := wl[id]
