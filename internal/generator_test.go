@@ -10,6 +10,33 @@ import (
 	"testing"
 )
 
+func TestGeneratePassword(t *testing.T) {
+	var tests = []struct {
+		input string
+		n     uint
+	}{
+		{create5DiceWordListToString(), 1},
+		{create5DiceWordListToString(), 10},
+	}
+
+	for _, test := range tests {
+		descr := fmt.Sprintf("GeneratePassword(%q, %d)", test.input, test.n)
+		r1 := strings.NewReader(test.input)
+		pw1, err := GeneratePassword(r1, test.n)
+		if err != nil {
+			t.Errorf("%s: should pass: failed: %v", descr, err)
+		}
+		if len(strings.Fields(pw1)) != int(test.n) {
+			t.Errorf("%s: wrong number of word: want: %d: got: %d", descr, test.n, len(strings.Fields(pw1)))
+		}
+		r2 := strings.NewReader(test.input)
+		pw2, _ := GeneratePassword(r2, test.n)
+		if pw1 == pw2 {
+			t.Errorf("%s: bad seed (or bad luck): same password generated twice: %q", descr, pw1)
+		}
+	}
+}
+
 func TestLoadWordList(t *testing.T) {
 	var tests = []struct {
 		input string
@@ -30,6 +57,10 @@ func TestLoadWordList(t *testing.T) {
 		r := strings.NewReader(test.input)
 		if _, n, err := loadWordList(r); (err == nil) != test.ok {
 			t.Errorf("%s: want: (%d, %t): got: (%d, %t): %v", descr, test.n, test.ok, n, err == nil, err)
+		} else if (err == nil) && test.ok {
+			if test.n != n {
+				t.Errorf("%s: wrong number of dice: want %d: got: %d", descr, test.n, n)
+			}
 		}
 	}
 }
