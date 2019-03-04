@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+v0.3.0
+------
+
+- Port full program to Go.
+
 v0.2.0
 ------
 
