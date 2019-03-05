@@ -69,3 +69,16 @@ Run:
 ```sh
 go test -v ./...
 ```
+
+## License
+
+Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
+
+```txt
+    dpwgen  Copyright (C) 2019 Camille Daum-Lobko
+    This program comes with ABSOLUTELY NO WARRANTY.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions.
+```
+
+See full [LICENSE terms](LICENSE).
