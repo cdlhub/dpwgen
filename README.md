@@ -67,11 +67,17 @@ Usage:
 
 ## Tests
 
-Run:
+Run unit tests from the repository directory:
 
 ```sh
 go test -v ./...
 ```
+
+## Version and Change log
+
+Program version is set in [about.go](about.go) with `VERSION` constant.
+
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
