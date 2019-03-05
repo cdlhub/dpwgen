@@ -82,3 +82,7 @@ Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
 ```
 
 See full [LICENSE terms](LICENSE).
+
+## Authors
+
+See [AUTHORS](AUTHORS).
