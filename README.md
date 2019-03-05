@@ -21,7 +21,8 @@ Or, build executable from sources:
   ```sh
   git clone https://github.com/cdlhub/dpwgen.git
   ```
-1. Build the package:
+
+2. Build the package:
 
   ```sh
   cd dpwgen
