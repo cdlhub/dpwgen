@@ -18,16 +18,16 @@ Or, build executable from sources:
 
 1. Use `git` to download sources:
 
-  ```sh
-  git clone https://github.com/cdlhub/dpwgen.git
-  ```
+    ```sh
+    git clone https://github.com/cdlhub/dpwgen.git
+    ```
 
-2. Build the package:
+1. Build the package:
 
-  ```sh
-  cd dpwgen
-  go build
-  ```
+    ```sh
+    cd dpwgen
+    go build
+    ```
 
 ## Usage
 
