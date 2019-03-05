@@ -31,9 +31,14 @@ Or, build executable from sources:
 
 ## Usage
 
-You need a diceware wordlist file as described in [Deep Dive: EFF's New Wordlists for Random Passphrases](https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases), alsop provided in the repository.
+You need a diceware wordlist file as described in [Deep Dive: EFF's New Wordlists for Random Passphrases](https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases). Two EFF files are provided in the repository:
 
-You can then generate a passphrase with the number of words you want (i.e. 6):
+* [eff_large_wordlist.txt](eff_large_wordlist.txt).
+* [eff_short_wordlist_2_0.txt](eff_short_wordlist_2_0.txt).
+
+The number of dice the tool needs to throw is automatically detected from the file format.
+
+You can then generate a passphrase with the number of words you want (e.g. 6):
 
 ```sh
 dpwgen -n 6 eff_large_wordlist.txt
