@@ -2,7 +2,7 @@ package main
 
 const (
 	// VERSION is program sementic version number
-	VERSION = "0.3.0"
+	VERSION = "1.0.0"
 	// APPNAME is program name
 	APPNAME = "dpwgen"
 	// AUTHOR is author name
