@@ -72,7 +72,7 @@ go test -v ./...
 
 ## License
 
-Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
+This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3.
 
 ```txt
     dpwgen  Copyright (C) 2019 Camille Daum-Lobko
@@ -81,7 +81,7 @@ Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
     under certain conditions.
 ```
 
-See full [LICENSE terms](LICENSE).
+See the [LICENSE](LICENSE) for details.
 
 ## Authors
 
