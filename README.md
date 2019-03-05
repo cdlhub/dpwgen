@@ -8,28 +8,26 @@ Diceware passphrase generator command line tool written in Go. It generates "ran
 
 ## Installation
 
-### Get Executable
-
-Use Go tool to install `dpwgen` executable:
+Use Go tool to install `dpwgen` executable on any platform (Linux, macOS, and Windows):
 
 ```sh
 go get -v github.com/cdlhub/dpwgen
 ```
 
-### Build from Sources
+Or, build executable from sources:
 
-Use `git` to download sources:
+1. Use `git` to download sources:
 
-```sh
-git clone https://github.com/cdlhub/dpwgen.git
-```
+  ```sh
+  git clone https://github.com/cdlhub/dpwgen.git
+  ```
 
-And then build the package:
+1. Build the package:
 
-```sh
-cd dpwgen
-go build
-```
+  ```sh
+  cd dpwgen
+  go build
+  ```
 
 ## Usage
 
