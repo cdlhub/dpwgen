@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
 	"log"
@@ -28,6 +29,9 @@ var (
 	options Options
 	logger  Logger
 )
+
+//go:embed eff_short_wordlist_2_0.txt
+var wordlist string
 
 func init() {
 	initOptions(&options)
@@ -60,20 +64,12 @@ func initLogger(logger *Logger) {
 }
 
 func main() {
-	opt := options
-	log := logger
-
-	if opt.version {
+	if options.version {
 		version()
 		os.Exit(0)
 	}
 
-	pw, err := dpwgen(opt.passFileName, opt.n)
-	if err != nil {
-		log.Error.Fatalf("%v: word list file: %q: number of words: %d: %v", APPNAME, opt.passFileName, opt.n, err)
-	}
-	fmt.Println(pw)
-
+	printPassword()
 	os.Exit(0)
 }
 
@@ -81,12 +77,40 @@ func version() {
 	fmt.Println(APPNAME + " version " + VERSION)
 }
 
-func dpwgen(fileName string, n uint) (string, error) {
-	f, err := os.Open(fileName)
+func printPassword() {
+	if options.passFileName == "" {
+		if err := printPasswordFromString(wordlist, options.n); err != nil {
+			logger.Error.Fatalf("%v: internal word list: number of words: %d: %v", APPNAME, options.n, err)
+		}
+	} else {
+		if err := printPasswordFromFile(options.passFileName, options.n); err != nil {
+			logger.Error.Fatalf("%v: word list file: %q: number of words: %d: %v", APPNAME, options.passFileName, options.n, err)
+		}
+	}
+}
+
+func printPasswordFromString(words string, n uint) error {
+	pw, err := internal.GeneratePassword(strings.NewReader(words), n)
 	if err != nil {
-		return "", err
+		return err
+	}
+
+	fmt.Println(pw)
+	return nil
+}
+
+func printPasswordFromFile(file string, n uint) error {
+	f, err := os.Open(file)
+	if err != nil {
+		return err
 	}
 	defer f.Close()
 
-	return internal.GeneratePassword(f, n)
+	pw, err := internal.GeneratePassword(f, n)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(pw)
+	return nil
 }

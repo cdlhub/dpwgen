@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+v1.1.0
+------
+
+* Embed word list.
+
 v1.0.0
 ------
 

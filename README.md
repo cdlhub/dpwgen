@@ -41,28 +41,29 @@ The number of dice the tool needs to throw is automatically detected from the fi
 You can then generate a passphrase with the number of words you want (e.g. 6):
 
 ```sh
-dpwgen -n 6 eff_large_wordlist.txt
+$ dpwgen -n 6 eff_large_wordlist.txt
+whiff surname footgear overfill bust expel
 ```
 
+If you don't provide a word list file, it will use an embeded version of `eff_short_wordlist_2_0.txt`:
+
 ```txt
-whiff surname footgear overfill bust expel
+$ dpwgen -n 3
+dig showroom septum
 ```
 
 Use `-help` to display usage:
 
 ```sh
-dpwgen -help
-```
-
-```txt
+$ dpwgen -help
 Usage:
-	dpwgen -version
-	dpwgen [ -n N ] <pass-file-name> 
+        dpwgen -version
+        dpwgen [ -n N ] <pass-file-name> 
 
   -n uint
-    	number of words in generated password (default 4)
+        number of words in generated password (default 4)
   -version
-    	Print version number
+        Print version number
 ```
 
 ## Tests
