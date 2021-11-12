@@ -30,7 +30,7 @@ var (
 	logger  Logger
 )
 
-//go:embed eff_large_wordlist.txt
+//go:embed eff_short_wordlist_2_0.txt
 var wordlist string
 
 func init() {
